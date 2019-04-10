@@ -1,7 +1,4 @@
 const box = document.getElementById('box');
-let pos = 10;
-const limit = 300;
-let vel = 1;
 
 const bound_x = 32;
 const bound_y = 32;
@@ -9,29 +6,19 @@ var field =  new Array(bound_x).fill(0).map(() => new Array(bound_y).fill(0));
 
 const random_int = (max) => Math.floor(Math.random() * Math.floor(max));
 
-const UP = [0,-1];
-const DOWN =  [0,1];
-const RIGHT = [1,0];
-const LEFT = [-1,0];
+const UP = [-1,0];
+const DOWN =  [1,0];
+const RIGHT = [0,1];
+const LEFT = [0,-1];
 
 let x = random_int(bound_x);
 let y = random_int(bound_y);
 let l = 2;
-
 let d = UP;
-switch (random_int(4)) {
-case 0: d = UP; break;
-case 1: d = DOWN; break;
-case 2: d = LEFT; break;
-case 3: d = RIGHT; break;
-}
-
-for (let i = l; i > 0; i--) {
-  field[x - (i * d[0])][y - (i * d[1])] = i;
-}
-
 let fx = random_int(bound_x);
 let fy = random_int(bound_y);
+let running = true;
+
 
 const feed = () => {
   while (field[fx][fy] !== 0) {
@@ -40,8 +27,20 @@ const feed = () => {
   }
 };
 
-feed();
-let running = true;
+const setup = () => {
+  switch (random_int(4)) {
+  case 0: d = UP; break;
+  case 1: d = DOWN; break;
+  case 2: d = LEFT; break;
+  case 3: d = RIGHT; break;
+  }
+
+  for (let i = l; i > 0; i--) {
+    field[x - (i * d[0])][y - (i * d[1])] = i;
+  }
+  feed();
+}
+
 
 const draw = () => {
   box.innerHTML = "";
@@ -53,7 +52,7 @@ const draw = () => {
       else if (i === fx && j === fy)
         box.innerHTML += '0';
       else
-        box.innerHTML += ' ';
+        box.innerHTML += '.';
     }
     box.innerHTML += "</p>";
   }
@@ -100,6 +99,7 @@ const update = () => {
   }
 }
 
+/* Run loop */
 let limit = 300;
 let lastFrameTimeMs = 0;
 let maxFPS = 60;
@@ -109,7 +109,9 @@ let fps = 60;
 let framesThisSecond = 0;
 let lastFpsUpdate = 0;
 
-const panic = () => {}
+const panic = () => {
+  running = false;
+}
 
 const mainLoop = (timestamp) => {
     // Throttle the frame rate.
